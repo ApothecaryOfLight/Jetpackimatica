@@ -7,6 +7,7 @@ A simple Jetpack mod.
 REQUIREMENTS
 -Default
 -3darmor
+-modlib
 
 
 OPTIONAL DEPENDENCIES
@@ -18,14 +19,19 @@ OPTIONAL DEPENDENCIES
 EXISTING FEATURES:
 -Basic Jetpack (placeholder model)
 -Super Jetpack (placeholder model)
+-Flight
+-No fall damage (temporary, will be configurable or highest tier)
 
 
 ROADMAP:
+-Add modlib log support.
 -Place required and optional dependencies in mod.conf.
--Jetpack models
+-Config file allowing you to set speeds, energy expenditure rate, fall damage.
+-Jetpack models and textures
 -6 tiers of jetpacks
 -Chargable jetpacks
 -Optional compatability with Technic
 -Optional compatability with Mesecon
 -Optional compatability with Hudbar
 -Optional compatability with MoreMinerals
+-Custom exhaust effects (lightning, green mist, rainbow, etc.)

@@ -94,15 +94,21 @@ end)
 minetest.register_on_leaveplayer( function( ObjectRed, timed_out )
 	print( "[JETPACKS] On Leaveplayer" )
 	if player_jetpack ~= nil then
-		player_jetpack:remove();
+		player_jetpack:set_detach();
+		player_jetpack:remove()
+		player_jetpack = nil
 	end
+	print( "[JETPACKS] Player left" )
 end)
 
 minetest.register_on_shutdown( function()
 	print( "[JETPACKS] Shutting down!" )
 	if player_jetpack ~= nil then
-		player_jetpack:remove();
+		player_jetpack:set_detach();
+		player_jetpack:remove()
+		player_jetpack = nil
 	end
+	print( "[JETPACKS] Shut down." )
 end)
 
 minetest.register_entity("jetpackimatica:basic_jetpack_worn", {
@@ -111,7 +117,25 @@ minetest.register_entity("jetpackimatica:basic_jetpack_worn", {
 		mesh = "jetpacks_test_002.b3d",
 		phyiscal = false,
 		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 }
+		visual_size = { x=6, y=6 },
+		textures = {
+			"Material.001.png",
+			"Material.002.png"
+		}
+	},
+})
+
+minetest.register_entity("jetpackimatica:super_jetpack_worn", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "jetpacks_test_002.b3d",
+		phyiscal = false,
+		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
+		visual_size = { x=6, y=6 },
+		textures = {
+			"purple.png",
+			"blue.png"
+		}
 	},
 })
 
@@ -124,36 +148,36 @@ minetest.register_tool("jetpackimatica:basic_jetpack", {
 	stack_max = 1,
 	on_equip = function( player, index, itemstack )
 		print( "[JETPACKS] on_equip")
+
 		--local myMeta = minetest.get_meta( player.get_pos() )
 		local myMeta = player:get_meta()
 		local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
 		local playerPos = player:get_pos()
-		if player_jetpack == nil then
-			local myJetpack = minetest.env:add_entity(
-				playerPos,
-				"jetpackimatica:basic_jetpack_worn"
+
+		player_jetpack = minetest.add_entity( playerPos, "jetpackimatica:basic_jetpack_worn" )
+		minetest.after( 1, function()
+			local attach = player_jetpack:set_attach(
+					player,
+					"",
+					{ x=0, y=5.5, z=-3.0 },
+					{ x=0, y=0, z=0 }
 			)
-			--print( dump( getmetatable( myJetpack ) ) )
-			--print( myJetpack:get_entity_name() )
-			--print( myJetpack:get_attach() )
-			myJetpack:set_attach(
-				player,
-				"",
-				{ x=0, y=5.5, z=-3.0 },
-				{ x=0, y=0, z=0 }
-			)
-			player_jetpack = myJetpack
-			myMeta:set_int( 'player_jetpack_level', 1 )
-		end
+		end)
+
+		myMeta:set_int( 'player_jetpack_level', 1 )
+		print( "[JETPACKS] Equipped!")
 	end,
 	on_unequip = function( player, index, stack )
 		print( "[JETPACKS] on_unequip!")
-		--player_jetpack:set_detach()
-		--player_jetpack:remove()
-		--player_jetpack = {}
 		local myMeta = player:get_meta()
 		myMeta:set_int( "player_jetpack_level", 0 )
-		player_jetpack = nil;
+		player_jetpack:set_detach();
+
+		minetest.after( 0.1, function()
+			player_jetpack:remove()
+			player_jetpack = nil;
+		end)
+		print( "[JETPACKS] Unequipped!")
 	end,
 	on_punch = function( pos, node, puncher, pointed_thing )
 		print( "[JETPACKS] on_punch!")
@@ -174,29 +198,29 @@ minetest.register_tool("jetpackimatica:super_jetpack", {
 		local myMeta = player:get_meta()
 		local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
 		local playerPos = player:get_pos()
-		local myJetpack = minetest.env:add_entity(
+		player_jetpack = minetest.env:add_entity(
 			playerPos,
 			"jetpackimatica:super_jetpack_worn"
 		)
-		--print( dump( getmetatable( myJetpack ) ) )
-		--print( myJetpack:get_entity_name() )
-		--print( myJetpack:get_attach() )
-		myJetpack:set_attach(
+		player_jetpack:set_attach(
 			player,
 			"",
 			{ x=0, y=5.5, z=-3.0 },
 			{ x=0, y=0, z=0 }
 		)
-		player_jetpack = myJetpack
+
 		myMeta:set_int( 'player_jetpack_level', 2 )
 	end,
 	on_unequip = function( player, index, stack )
 		print( "[JETPACKS] on_unequip!")
-		--player_jetpack:set_detach()
-		player_jetpack:remove()
-		player_jetpack = {}
 		local myMeta = player:get_meta()
 		myMeta:set_int( "player_jetpack_level", 0 )
+		player_jetpack:set_detach();
+
+		minetest.after( 0.1, function()
+			player_jetpack:remove()
+			player_jetpack = nil;
+		end)
 	end,
 	on_punch = function( pos, node, puncher, pointed_thing )
 		print( "[JETPACKS] on_punch!")
@@ -204,7 +228,8 @@ minetest.register_tool("jetpackimatica:super_jetpack", {
 	end
 })
 
-default.player_register_model("take_two.b3d", {
+
+default.player_register_model("jetpacks_test_002.b3d", {
 	animation_speed = 30,
 	textures = {
 		"experimental_jetpack_trans.png"
@@ -235,5 +260,6 @@ minetest.register_craft({
 		{"default:gold", "default:gold", "default:gold"}
 	}
 })
+
 
 print("[JETPACKS] Done loading.")

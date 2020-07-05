@@ -1,0 +1,31 @@
+Jetpackimatica
+by ApothecaryOfLight
+
+A simple Jetpack mod.
+
+
+REQUIREMENTS
+-Default
+-3darmor
+
+
+OPTIONAL DEPENDENCIES
+-Technic
+-Mesecon
+-Hudbar
+
+
+EXISTING FEATURES:
+-Basic Jetpack (placeholder model)
+-Super Jetpack (placeholder model)
+
+
+ROADMAP:
+-Place required and optional dependencies in mod.conf.
+-Jetpack models
+-6 tiers of jetpacks
+-Chargable jetpacks
+-Optional compatability with Technic
+-Optional compatability with Mesecon
+-Optional compatability with Hudbar
+-Optional compatability with MoreMinerals

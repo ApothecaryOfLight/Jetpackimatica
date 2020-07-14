@@ -324,4 +324,76 @@ minetest.register_craft({
 })
 
 
+
+
+
+minetest.register_tool("jetpackimatica:uv_jetpack", {
+	description = "UV Jetpack",
+	inventory_image = "jetpacks_super_jetpack.png",
+	groups = {armor_torso=1, armor_heal=0, armor_use=1000},
+	armor_groups = {fleshy=20},
+	damage_groups = {cracky=3, snappy=3, choppy=2, crumbly=2, level=1},
+	stack_max = 1,
+	on_equip = function( player, index, itemstack )
+		print( "[JETPACKS] on_equip super")
+		--local myMeta = minetest.get_meta( player.get_pos() )
+		local myMeta = player:get_meta()
+		local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
+		local playerPos = player:get_pos()
+		player_jetpack = minetest.env:add_entity(
+			playerPos,
+			"jetpackimatica:jetpacks_uv"
+		)
+		player_jetpack:set_attach(
+			player,
+			"",
+			{ x=0, y=5.5, z=-3.0 },
+			{ x=0, y=0, z=0 }
+		)
+
+		myMeta:set_int( 'player_jetpack_level', 3 )
+	end,
+	on_unequip = function( player, index, stack )
+		print( "[JETPACKS] on_unequip!")
+		local myMeta = player:get_meta()
+		myMeta:set_int( "player_jetpack_level", 0 )
+		player_jetpack:set_detach();
+
+		minetest.after( 0.1, function()
+			player_jetpack:remove()
+			player_jetpack = nil;
+		end)
+	end,
+	on_punch = function( pos, node, puncher, pointed_thing )
+		print( "[JETPACKS] on_punch!")
+		print( dump( getmetatable( pointed_thing ) ) )
+	end
+})
+default.player_register_model("jetpacks_uv.b3d", {
+	animation_speed = 30,
+	textures = {
+		"blown-up-jetpack_uvmap_wraparound.png"
+	},
+	animations = {
+		stand = {x=0, y=1},
+		lay = {x=0, y=0},
+		walk = {x=0, y=0},
+		mine = {x=0, y=0},
+		walk_mine = {x=0, y=0},
+		sit = {x=0, y=0},
+	},
+})
+minetest.register_entity("jetpackimatica:jetpacks_uv", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "jetpacks_uv.b3d",
+		phyiscal = false,
+		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
+		visual_size = { x=6, y=6 },
+		textures = {
+			"blown-up-jetpack_uvmap_wraparound.png"
+		},
+	},
+})
+
 print("[JETPACKS] Done loading.")

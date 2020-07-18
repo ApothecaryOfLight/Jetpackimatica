@@ -3,13 +3,13 @@ local jetpack_timer = 0
 
 local player_jetpack = {}
 
-minetest.register_on_player_hpchange( function(player, hp_change, reason)
+--[[minetest.register_on_player_hpchange( function(player, hp_change, reason)
 	if player_jetpack ~= nil and reason.type == 'fall' then
 		return 0
 	else
 		return hp_change
 	end
-end, true )
+end, true )]]
 
 local function jetpack_step(player,jetpack_time)
 	local myMeta = player:get_meta()

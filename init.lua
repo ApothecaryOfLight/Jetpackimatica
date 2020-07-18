@@ -114,48 +114,10 @@ minetest.register_on_shutdown( function()
 	print( "[JETPACKS] Shut down." )
 end)
 
-minetest.register_entity("jetpackimatica:basic_jetpack_worn", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_test_002.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
-		textures = {
-			"color_red.png",
-			"color_yellow.png"
-		}
-	},
-})
 
-minetest.register_entity("jetpackimatica:advanced_jetpack_worn", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_test_002.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
-		textures = {
-			"color_green.png",
-			"color_tan.png"
-		}
-	},
-})
 
-minetest.register_entity("jetpackimatica:super_jetpack_worn", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_test_002.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
-		textures = {
-			"color_purple.png",
-			"color_blue.png"
-		}
-	},
-})
 
+--basic jetpack
 minetest.register_tool("jetpackimatica:basic_jetpack", {
 	description = "Basic Jetpack",
 	inventory_image = "jetpacks_basic_jetpack.png",
@@ -201,7 +163,47 @@ minetest.register_tool("jetpackimatica:basic_jetpack", {
 		print( dump( getmetatable( pointed_thing ) ) )
 	end
 })
+--[[minetest.register_entity("jetpackimatica:basic_jetpack_worn", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "jetpacks_test_002.b3d",
+		phyiscal = false,
+		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
+		visual_size = { x=6, y=6 },
+		textures = {
+			"color_red.png",
+			"color_yellow.png"
+		}
+	},
+})]]
+minetest.register_entity("jetpackimatica:basic_jetpack_worn", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "jetpacks_basic.b3d",
+		phyiscal = false,
+		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
+		visual_size = { x=6, y=6 },
+		textures = {
+			"blown-up-jetpack_basic_map_wraparound.png"
+		},
+	},
+})
+default.player_register_model("jetpacks_basic.b3d", {
+	animation_speed = 30,
+	textures = {
+		"blown-up-jetpack_basic_map_wraparound.png"
+	},
+	animations = {
+		stand = {x=0, y=1},
+		lay = {x=0, y=0},
+		walk = {x=0, y=0},
+		mine = {x=0, y=0},
+		walk_mine = {x=0, y=0},
+		sit = {x=0, y=0},
+	},
+})
 
+--advanced jetpack
 minetest.register_tool("jetpackimatica:advanced_jetpack", {
 	description = "Advanced Jetpack",
 	inventory_image = "jetpacks_advanced_jetpack.png",
@@ -247,7 +249,47 @@ minetest.register_tool("jetpackimatica:advanced_jetpack", {
 		print( dump( getmetatable( pointed_thing ) ) )
 	end
 })
+--[[minetest.register_entity("jetpackimatica:advanced_jetpack_worn", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "jetpacks_test_002.b3d",
+		phyiscal = false,
+		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
+		visual_size = { x=6, y=6 },
+		textures = {
+			"color_green.png",
+			"color_tan.png"
+		}
+	},
+})]]
+minetest.register_entity("jetpackimatica:advanced_jetpack_worn", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "jetpacks_advanced.b3d",
+		phyiscal = false,
+		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
+		visual_size = { x=6, y=6 },
+		textures = {
+			"blown-up-jetpack_advanced_map_wraparound.png"
+		},
+	},
+})
+default.player_register_model("jetpacks_advanced.b3d", {
+	animation_speed = 30,
+	textures = {
+		"blown-up-jetpack_advanced_map_wraparound.png"
+	},
+	animations = {
+		stand = {x=0, y=1},
+		lay = {x=0, y=0},
+		walk = {x=0, y=0},
+		mine = {x=0, y=0},
+		walk_mine = {x=0, y=0},
+		sit = {x=0, y=0},
+	},
+})
 
+--super jetpack
 minetest.register_tool("jetpackimatica:super_jetpack", {
 	description = "Super Jetpack",
 	inventory_image = "jetpacks_super_jetpack.png",
@@ -290,11 +332,35 @@ minetest.register_tool("jetpackimatica:super_jetpack", {
 		print( dump( getmetatable( pointed_thing ) ) )
 	end
 })
-
-default.player_register_model("jetpacks_test_002.b3d", {
+--[[minetest.register_entity("jetpackimatica:super_jetpack_worn", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "jetpacks_test_002.b3d",
+		phyiscal = false,
+		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
+		visual_size = { x=6, y=6 },
+		textures = {
+			"color_purple.png",
+			"color_blue.png"
+		}
+	},
+})]]
+minetest.register_entity("jetpackimatica:super_jetpack_worn", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "jetpacks_super.b3d",
+		phyiscal = false,
+		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
+		visual_size = { x=6, y=6 },
+		textures = {
+			"blown-up-jetpack_super_map_wraparound.png"
+		},
+	},
+})
+default.player_register_model("jetpacks_super.b3d", {
 	animation_speed = 30,
 	textures = {
-		"experimental_jetpack_trans.png"
+		"blown-up-jetpack_super_map_wraparound.png"
 	},
 	animations = {
 		stand = {x=0, y=1},
@@ -326,7 +392,7 @@ minetest.register_craft({
 
 
 
-
+--UV Jetpack
 minetest.register_tool("jetpackimatica:uv_jetpack", {
 	description = "UV Jetpack",
 	inventory_image = "jetpacks_super_jetpack.png",
@@ -369,6 +435,18 @@ minetest.register_tool("jetpackimatica:uv_jetpack", {
 		print( dump( getmetatable( pointed_thing ) ) )
 	end
 })
+minetest.register_entity("jetpackimatica:jetpacks_uv", {
+	initial_properties = {
+		visual = "mesh",
+		mesh = "jetpacks_uv.b3d",
+		phyiscal = false,
+		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
+		visual_size = { x=6, y=6 },
+		textures = {
+			"blown-up-jetpack_uvmap_wraparound.png"
+		},
+	},
+})
 default.player_register_model("jetpacks_uv.b3d", {
 	animation_speed = 30,
 	textures = {
@@ -381,18 +459,6 @@ default.player_register_model("jetpacks_uv.b3d", {
 		mine = {x=0, y=0},
 		walk_mine = {x=0, y=0},
 		sit = {x=0, y=0},
-	},
-})
-minetest.register_entity("jetpackimatica:jetpacks_uv", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_uv.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
-		textures = {
-			"blown-up-jetpack_uvmap_wraparound.png"
-		},
 	},
 })
 

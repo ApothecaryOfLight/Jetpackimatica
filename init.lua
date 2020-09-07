@@ -3,14 +3,6 @@ local jetpack_timer = 0
 
 local player_jetpack = {}
 
---[[minetest.register_on_player_hpchange( function(player, hp_change, reason)
-	if player_jetpack ~= nil and reason.type == 'fall' then
-		return 0
-	else
-		return hp_change
-	end
-end, true )]]
-
 local function jetpack_step(player,jetpack_time)
 	local myMeta = player:get_meta()
 	local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
@@ -114,8 +106,9 @@ minetest.register_on_shutdown( function()
 	print( "[JETPACKS] Shut down." )
 end)
 
+--local function doRegisterJetpack( inSystemName, inUserName, inJetpackLevel )
 
-
+--end
 
 --basic jetpack
 minetest.register_tool("jetpackimatica:basic_jetpack", {
@@ -163,19 +156,6 @@ minetest.register_tool("jetpackimatica:basic_jetpack", {
 		print( dump( getmetatable( pointed_thing ) ) )
 	end
 })
---[[minetest.register_entity("jetpackimatica:basic_jetpack_worn", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_test_002.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
-		textures = {
-			"color_red.png",
-			"color_yellow.png"
-		}
-	},
-})]]
 minetest.register_entity("jetpackimatica:basic_jetpack_worn", {
 	initial_properties = {
 		visual = "mesh",
@@ -249,19 +229,7 @@ minetest.register_tool("jetpackimatica:advanced_jetpack", {
 		print( dump( getmetatable( pointed_thing ) ) )
 	end
 })
---[[minetest.register_entity("jetpackimatica:advanced_jetpack_worn", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_test_002.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
-		textures = {
-			"color_green.png",
-			"color_tan.png"
-		}
-	},
-})]]
+
 minetest.register_entity("jetpackimatica:advanced_jetpack_worn", {
 	initial_properties = {
 		visual = "mesh",
@@ -332,19 +300,7 @@ minetest.register_tool("jetpackimatica:super_jetpack", {
 		print( dump( getmetatable( pointed_thing ) ) )
 	end
 })
---[[minetest.register_entity("jetpackimatica:super_jetpack_worn", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_test_002.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
-		textures = {
-			"color_purple.png",
-			"color_blue.png"
-		}
-	},
-})]]
+
 minetest.register_entity("jetpackimatica:super_jetpack_worn", {
 	initial_properties = {
 		visual = "mesh",

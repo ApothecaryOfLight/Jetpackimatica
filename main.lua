@@ -6,6 +6,12 @@ local player_jetpack = {}
 modlib.log.create_channel( "jetpackimatica" );
 modlib.log.write( "jetpackimatica", "test" );
 
+local function print_replace( inMessage )
+	modlib.log.write( "jetpackimatica", inMessage );
+end
+
+print = print_replace;
+
 local function jetpack_step(player,jetpack_time)
 	local myMeta = player:get_meta()
 	local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
@@ -109,229 +115,87 @@ minetest.register_on_shutdown( function()
 	print( "[JETPACKS] Shut down." )
 end)
 
---local function doRegisterJetpack( inSystemName, inUserName, inJetpackLevel )
+local function doRegisterJetpack( inSystemName, inUserName, inJetpackLevel, inTextureName )
+	local modname = "jetpackimatica:"..inSystemName;
+	local inventory_image_name = "jetpacks_"..inSystemName..".png";
+	local inventory_worn = "jetpackimatica:"..inSystemName.."_worn";
 
---end
+	minetest.register_tool(modname, {
+		description = inUserName,
+		inventory_image = inventory_image_name,
+		groups = {armor_torso=1, armor_heal=0, armor_use=1000},
+		armor_groups = {fleshy=20},
+		damage_groups = {cracky=3, snappy=3, choppy=2, crumbly=2, level=1},
+		stack_max = 1,
+		on_equip = function( player, index, itemstack )
+			print( "[JETPACKS] on_equip "..inSystemName )
+	
+			--local myMeta = minetest.get_meta( player.get_pos() )
+			local myMeta = player:get_meta()
+			local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
+			local playerPos = player:get_pos()
+	
+			player_jetpack = minetest.add_entity( playerPos, "jetpackimatica:basic_jetpack_worn" )
 
---basic jetpack
-minetest.register_tool("jetpackimatica:basic_jetpack", {
-	description = "Basic Jetpack",
-	inventory_image = "jetpacks_basic_jetpack.png",
-	groups = {armor_torso=1, armor_heal=0, armor_use=1000},
-	armor_groups = {fleshy=20},
-	damage_groups = {cracky=3, snappy=3, choppy=2, crumbly=2, level=1},
-	stack_max = 1,
-	on_equip = function( player, index, itemstack )
-		print( "[JETPACKS] on_equip basic")
-
-		--local myMeta = minetest.get_meta( player.get_pos() )
-		local myMeta = player:get_meta()
-		local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
-		local playerPos = player:get_pos()
-
-		player_jetpack = minetest.add_entity( playerPos, "jetpackimatica:basic_jetpack_worn" )
-		--minetest.after( 1, function()
 			local attach = player_jetpack:set_attach(
 					player,
 					"",
 					{ x=0, y=5.5, z=-3.0 },
 					{ x=0, y=0, z=0 }
 			)
-		--end)
+	
+			myMeta:set_int( 'player_jetpack_level', inJetpackLevel )
+			print( "[JETPACKS] Equipped!")
+		end,
+		on_unequip = function( player, index, stack )
+			print( "[JETPACKS] on_unequip "..inSystemName )
 
-		myMeta:set_int( 'player_jetpack_level', 1 )
-		print( "[JETPACKS] Equipped!")
-	end,
-	on_unequip = function( player, index, stack )
-		print( "[JETPACKS] on_unequip basic!")
-		local myMeta = player:get_meta()
-		myMeta:set_int( "player_jetpack_level", 0 )
-		player_jetpack:set_detach();
-
-		--minetest.after( 0.1, function()
+			local myMeta = player:get_meta()
+			myMeta:set_int( "player_jetpack_level", 0 )
+			player_jetpack:set_detach();
+	
 			player_jetpack:remove()
 			player_jetpack = nil;
-		--end)
-		print( "[JETPACKS] Unequipped!")
-	end,
-	on_punch = function( pos, node, puncher, pointed_thing )
-		print( "[JETPACKS] on_punch!")
-		print( dump( getmetatable( pointed_thing ) ) )
-	end
-})
 
-minetest.register_entity("jetpackimatica:basic_jetpack_worn", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_basic.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
-		textures = {
-			"blown-up-jetpack_basic_map_wraparound.png"
+			print( "[JETPACKS] Unequipped "..inSystemName )
+		end,
+		on_punch = function( pos, node, puncher, pointed_thing )
+			print( "[JETPACKS] on_punch!")
+			print( dump( getmetatable( pointed_thing ) ) )
+		end
+	})
+
+	minetest.register_entity(inventory_worn, {
+		initial_properties = {
+			visual = "mesh",
+			mesh = "jetpacks_basic.b3d",
+			phyiscal = false,
+			collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
+			visual_size = { x=6, y=6 },
+			textures = {
+				"blown-up-jetpack_"..inTextureName.."_map_wraparound.png"
+			},
 		},
-	},
-})
---default.player_register_model("jetpacks_basic.b3d", {
-default.player_register_model("jetpacks_testing_a.b3d", {
-	animation_speed = 30,
-	textures = {
-		"blown-up-jetpack_basic_map_wraparound.png"
-	},
-	animations = {
-		stand = {x=0, y=1},
-		lay = {x=0, y=0},
-		walk = {x=0, y=0},
-		mine = {x=0, y=0},
-		walk_mine = {x=0, y=0},
-		sit = {x=0, y=0},
-	},
-})
-
---advanced jetpack
-minetest.register_tool("jetpackimatica:advanced_jetpack", {
-	description = "Advanced Jetpack",
-	inventory_image = "jetpacks_advanced_jetpack.png",
-	groups = {armor_torso=1, armor_heal=0, armor_use=1000},
-	armor_groups = {fleshy=20},
-	damage_groups = {cracky=3, snappy=3, choppy=2, crumbly=2, level=1},
-	stack_max = 1,
-	on_equip = function( player, index, itemstack )
-		print( "[JETPACKS] on_equip adv")
-
-		--local myMeta = minetest.get_meta( player.get_pos() )
-		local myMeta = player:get_meta()
-		local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
-		local playerPos = player:get_pos()
-
-		player_jetpack = minetest.add_entity( playerPos, "jetpackimatica:basic_jetpack_worn" )
-		--minetest.after( 1, function()
-			local attach = player_jetpack:set_attach(
-					player,
-					"",
-					{ x=0, y=5.5, z=-3.0 },
-					{ x=0, y=0, z=0 }
-			)
-		--end)
-
-		myMeta:set_int( 'player_jetpack_level', 2 )
-		print( "[JETPACKS] Equipped!")
-	end,
-	on_unequip = function( player, index, stack )
-		print( "[JETPACKS] on_unequip adv!")
-		local myMeta = player:get_meta()
-		myMeta:set_int( "player_jetpack_level", 0 )
-		player_jetpack:set_detach();
-
-		--minetest.after( 0.1, function()
-			player_jetpack:remove()
-			player_jetpack = nil;
-		--end)
-		print( "[JETPACKS] Unequipped!")
-	end,
-	on_punch = function( pos, node, puncher, pointed_thing )
-		print( "[JETPACKS] on_punch!")
-		print( dump( getmetatable( pointed_thing ) ) )
-	end
-})
-
-minetest.register_entity("jetpackimatica:advanced_jetpack_worn", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_advanced.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
+	})
+	default.player_register_model("jetpacks_testing_a.b3d", {
+		animation_speed = 30,
 		textures = {
-			"blown-up-jetpack_advanced_map_wraparound.png"
+			"blown-up-jetpack_"..inTextureName.."_map_wraparound.png"
 		},
-	},
-})
-default.player_register_model("jetpacks_advanced.b3d", {
-	animation_speed = 30,
-	textures = {
-		"blown-up-jetpack_advanced_map_wraparound.png"
-	},
-	animations = {
-		stand = {x=0, y=1},
-		lay = {x=0, y=0},
-		walk = {x=0, y=0},
-		mine = {x=0, y=0},
-		walk_mine = {x=0, y=0},
-		sit = {x=0, y=0},
-	},
-})
-
---super jetpack
-minetest.register_tool("jetpackimatica:super_jetpack", {
-	description = "Super Jetpack",
-	inventory_image = "jetpacks_super_jetpack.png",
-	groups = {armor_torso=1, armor_heal=0, armor_use=1000},
-	armor_groups = {fleshy=20},
-	damage_groups = {cracky=3, snappy=3, choppy=2, crumbly=2, level=1},
-	stack_max = 1,
-	on_equip = function( player, index, itemstack )
-		print( "[JETPACKS] on_equip super")
-		--local myMeta = minetest.get_meta( player.get_pos() )
-		local myMeta = player:get_meta()
-		local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
-		local playerPos = player:get_pos()
-		player_jetpack = minetest.env:add_entity(
-			playerPos,
-			"jetpackimatica:super_jetpack_worn"
-		)
-		player_jetpack:set_attach(
-			player,
-			"",
-			{ x=0, y=5.5, z=-3.0 },
-			{ x=0, y=0, z=0 }
-		)
-
-		myMeta:set_int( 'player_jetpack_level', 3 )
-	end,
-	on_unequip = function( player, index, stack )
-		print( "[JETPACKS] on_unequip super!")
-		local myMeta = player:get_meta()
-		myMeta:set_int( "player_jetpack_level", 0 )
-		player_jetpack:set_detach();
-
-		--minetest.after( 0.1, function()
-			player_jetpack:remove()
-			player_jetpack = nil;
-		--end)
-	end,
-	on_punch = function( pos, node, puncher, pointed_thing )
-		print( "[JETPACKS] on_punch!")
-		print( dump( getmetatable( pointed_thing ) ) )
-	end
-})
-
-minetest.register_entity("jetpackimatica:super_jetpack_worn", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_super.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
-		textures = {
-			"blown-up-jetpack_super_map_wraparound.png"
+		animations = {
+			stand = {x=0, y=1},
+			lay = {x=0, y=0},
+			walk = {x=0, y=0},
+			mine = {x=0, y=0},
+			walk_mine = {x=0, y=0},
+			sit = {x=0, y=0},
 		},
-	},
-})
-default.player_register_model("jetpacks_super.b3d", {
-	animation_speed = 30,
-	textures = {
-		"blown-up-jetpack_super_map_wraparound.png"
-	},
-	animations = {
-		stand = {x=0, y=1},
-		lay = {x=0, y=0},
-		walk = {x=0, y=0},
-		mine = {x=0, y=0},
-		walk_mine = {x=0, y=0},
-		sit = {x=0, y=0},
-	},
-})
+	})
+end
+
+doRegisterJetpack( "basic_jetpack", "Basic Jetpack", 1, "basic" );
+doRegisterJetpack( "advanced_jetpack", "Advanced Jetpack", 2, "advanced" );
+doRegisterJetpack( "super_jetpack", "Super Jetpack", 3, "super" );
 
 minetest.register_craft({
 	output = "jetpackimatica:basic_jetpack",
@@ -348,79 +212,6 @@ minetest.register_craft({
 		{"default:gold", "group:stone", "default:gold"},
 		{"default:gold", "default:gold", "default:gold"}
 	}
-})
-
-
-
-
---UV Jetpack
-minetest.register_tool("jetpackimatica:uv_jetpack", {
-	description = "UV Jetpack",
-	inventory_image = "jetpacks_super_jetpack.png",
-	groups = {armor_torso=1, armor_heal=0, armor_use=1000},
-	armor_groups = {fleshy=20},
-	damage_groups = {cracky=3, snappy=3, choppy=2, crumbly=2, level=1},
-	stack_max = 1,
-	on_equip = function( player, index, itemstack )
-		print( "[JETPACKS] on_equip super")
-		--local myMeta = minetest.get_meta( player.get_pos() )
-		local myMeta = player:get_meta()
-		local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
-		local playerPos = player:get_pos()
-		player_jetpack = minetest.env:add_entity(
-			playerPos,
-			"jetpackimatica:jetpacks_uv"
-		)
-		player_jetpack:set_attach(
-			player,
-			"",
-			{ x=0, y=5.5, z=-3.0 },
-			{ x=0, y=0, z=0 }
-		)
-
-		myMeta:set_int( 'player_jetpack_level', 3 )
-	end,
-	on_unequip = function( player, index, stack )
-		print( "[JETPACKS] on_unequip!")
-		local myMeta = player:get_meta()
-		myMeta:set_int( "player_jetpack_level", 0 )
-		player_jetpack:set_detach();
-
-		--minetest.after( 0.1, function()
-			player_jetpack:remove()
-			player_jetpack = nil;
-		--end)
-	end,
-	on_punch = function( pos, node, puncher, pointed_thing )
-		print( "[JETPACKS] on_punch!")
-		print( dump( getmetatable( pointed_thing ) ) )
-	end
-})
-minetest.register_entity("jetpackimatica:jetpacks_uv", {
-	initial_properties = {
-		visual = "mesh",
-		mesh = "jetpacks_uv.b3d",
-		phyiscal = false,
-		collisionbox = { -0.2, -0.3, -0.2, 0.2, 0.3, 0.2 },
-		visual_size = { x=6, y=6 },
-		textures = {
-			"blown-up-jetpack_uvmap_wraparound.png"
-		},
-	},
-})
-default.player_register_model("jetpacks_uv.b3d", {
-	animation_speed = 30,
-	textures = {
-		"blown-up-jetpack_uvmap_wraparound.png"
-	},
-	animations = {
-		stand = {x=0, y=1},
-		lay = {x=0, y=0},
-		walk = {x=0, y=0},
-		mine = {x=0, y=0},
-		walk_mine = {x=0, y=0},
-		sit = {x=0, y=0},
-	},
 })
 
 print("[JETPACKS] Done loading.")

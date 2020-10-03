@@ -1,4 +1,4 @@
-local jetpack_timer_step = 0.001
+local jetpack_timer_step = 0.01
 local jetpack_timer = 0
 
 local player_jetpack = nil
@@ -16,8 +16,18 @@ end
 print = print_replace;
 
 --code instrumentation to determine why server performance seems so bad
+local lastTime = nil;
 
 local function jetpack_step(player,jetpack_time)
+	print( "JET:"..jetpack_time )
+	local timeLag = jetpack_time/jetpack_timer_step;
+	print( "multiplier:"..timeLag )
+	--[[if lastTime then
+		print( jetpack_time )
+		print( jetpack_time-lastTime )
+	else
+		lastTime = jetpack_time
+	end]]
 	local myMeta = player:get_meta()
 	local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
 	if player_jetpack_level == nil then
@@ -45,7 +55,7 @@ local function jetpack_step(player,jetpack_time)
 				player:add_player_velocity(
 					{
 						x=lookDir.x,
-						y=velocity_incremenent,
+						y=velocity_incremenent*timeLag,
 						z=lookDir.z
 					}
 				)

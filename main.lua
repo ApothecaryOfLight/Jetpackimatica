@@ -15,6 +15,8 @@ end
 
 print = print_replace;
 
+--code instrumentation to determine why server performance seems so bad
+
 local function jetpack_step(player,jetpack_time)
 	local myMeta = player:get_meta()
 	local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
@@ -23,25 +25,9 @@ local function jetpack_step(player,jetpack_time)
 		myMeta:set_int( 'player_jetpack_level', 0 )		
 	end
 	if player_jetpack_level > 0 then
-		local ctrl = player:get_player_control()
-		if ctrl.jump == true then
-			local wasSpacedown = myMeta:get_int( 'isSpacedown' )
-			if wasSpacedown == nil then wasSpacedown = false end
-			myMeta:set_int( 'isSpacedown', 1 )
-			if wasSpacedown == 1 then
-				local lastPosition = myMeta:get_int('lastPosition')
-				if lastPosition == 0 then
-					lastPosition = player:get_pos()
-					--print( dump( lastPosition ))
-				end
-				local currPosition = player:get_pos()
-				if lastPosition.y < currPosition.y then
-					print( ">>>>>>>>>>>> Uncontrolled falling!" )
-					player:add_player_velocity( 20 )
-				end
-			end
-			--print( "[JETPACKS] jetpacking going up" )
-			local velocity = player:get_player_velocity()
+		local playerControl = player:get_player_control()
+		if playerControl.jump == true then
+			velocity = player:get_player_velocity()
 			local lookDir = player:get_look_dir()
 			local velocity_max = 6
 			local velocity_incremenent = 1
@@ -64,26 +50,6 @@ local function jetpack_step(player,jetpack_time)
 					}
 				)
 			end
-			if velocity.y < -2 then
-				local meta = minetest:get_meta( player:get_pos() )
-				local lastVelocity = meta:get_int("last_velocity")
-				if lastVelocity ~= nil then
-					if
-						lastVelocity == math.floor(velocity.y) or
-						lastVelocity == math.ceil(velocity.y)
-					then
-						return
-					else
-						print( "Correcting "..velocity.y.." with last_velocity of "..lastVelocity )
-						player:add_player_velocity({
-							x=0,
-							y=math.abs(velocity.y),
-							z=0}
-						)
-						meta:set_int( "last_velocity",velocity.y )
-					end
-				end
-			end
 		end
 	end
 end
@@ -100,7 +66,7 @@ end)
 
 minetest.register_on_leaveplayer( function( ObjectRef, timed_out )
 	print( "[JETPACKS] On Leaveplayer" )
-	if player_jetpack then
+	if player_jetpack ~= nil then
 		print( "[JETPACKS] Removing Jetpack on player leave." );
 		player_jetpack:remove()
 		player_jetpack = nil
@@ -110,8 +76,9 @@ end)
 
 minetest.register_on_shutdown( function()
 	print( "[JETPACKS] Shutting down!" )
-	if player_jetpack then
+	if player_jetpack ~= nil then
 		print( "[JETPACKS] Removing Jetpack on shutdown." );
+		--print( dump( player_jetpack ) )
 		player_jetpack:remove()
 		player_jetpack = nil
 	end
@@ -132,7 +99,7 @@ local function doRegisterJetpack( inSystemName, inUserName, inJetpackLevel, inTe
 		stack_max = 1,
 		on_equip = function( player, index, itemstack )
 			print( "[JETPACKS] on_equip "..inSystemName )
-			if player_jetpack then
+			if player_jetpack ~= nil then
 				print( "equip: jetpack exists!" );
 			else
 				print ( "equip: jetpack doesn't exist!" );
@@ -159,7 +126,7 @@ local function doRegisterJetpack( inSystemName, inUserName, inJetpackLevel, inTe
 		end,
 		on_unequip = function( player, index, stack )
 			print( "[JETPACKS] on_unequip "..inSystemName )
-			if player_jetpack then
+			if player_jetpack ~= nil then
 				print( "equip: jetpack exists!" );
 				local myMeta = player:get_meta()
 				myMeta:set_int( "player_jetpack_level", 0 )

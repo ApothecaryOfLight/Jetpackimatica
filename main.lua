@@ -13,21 +13,17 @@ local function print_replace( inMessage )
 	modlib.log.write( "jetpackimatica", inMessage );
 end
 
+local lag_detected = false;
+
 print = print_replace;
 
 --code instrumentation to determine why server performance seems so bad
 local lastTime = nil;
 
 local function jetpack_step(player,jetpack_time)
-	print( "JET:"..jetpack_time )
+	--print( "JETPACK_TIME:"..jetpack_time )
 	local timeLag = jetpack_time/jetpack_timer_step;
-	print( "multiplier:"..timeLag )
-	--[[if lastTime then
-		print( jetpack_time )
-		print( jetpack_time-lastTime )
-	else
-		lastTime = jetpack_time
-	end]]
+	--print( "multiplier:"..timeLag )
 	local myMeta = player:get_meta()
 	local player_jetpack_level = myMeta:get_int( 'player_jetpack_level' )
 	if player_jetpack_level == nil then
@@ -37,25 +33,28 @@ local function jetpack_step(player,jetpack_time)
 	if player_jetpack_level > 0 then
 		local playerControl = player:get_player_control()
 		if playerControl.jump == true then
-			velocity = player:get_player_velocity()
+			local velocity = player:get_player_velocity()
 			local lookDir = player:get_look_dir()
 			local velocity_max = 6
 			local velocity_incremenent = 1
 			if player_jetpack_level == 1 then
-				velocity_max = 6
+				velocity_max = 2
 				velocity_incremenent = 1
 			elseif player_jetpack_level == 2 then
-				velocity_max = 18
-				velocity_increment = 5
+				velocity_max = 5
+				velocity_increment = 3
 			elseif player_jetpack_level == 3 then
-				velocity_max = 60
-				velocity_increment = 15
+				velocity_max = 10
+				velocity_increment = 4
 			end
+			local velocity_calc = velocity_incremenent*timeLag;
+			velocity_calc = math.min( velocity_calc, velocity_max )
+			print( "Adding velocity "..velocity_calc.."." )
 			if velocity.y < velocity_max then
 				player:add_player_velocity(
 					{
 						x=lookDir.x,
-						y=velocity_incremenent*timeLag,
+						y=velocity_calc,
 						z=lookDir.z
 					}
 				)
@@ -63,6 +62,14 @@ local function jetpack_step(player,jetpack_time)
 		end
 	end
 end
+
+minetest.register_on_player_hpchange( function(player, hp_change, reason)
+	if player_jetpack ~= nil and reason.type == 'fall' then
+		return 0
+	else
+		return hp_change
+	end
+end, true )
 
 minetest.register_globalstep( function(dtime)
 	jetpack_timer = jetpack_timer + dtime
